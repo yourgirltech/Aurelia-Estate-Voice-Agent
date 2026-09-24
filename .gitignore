@@ -1,0 +1,11 @@
+# Frontend
+frontend/node_modules
+frontend/dist
+frontend/.env
+frontend/.env.local
+
+# Supabase CLI local state (project ref, pooler URL, etc — not for sharing)
+supabase/.temp
+supabase/.branches
+
+.DS_Store

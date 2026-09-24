@@ -1,0 +1,50 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-brand-bg text-brand font-sans antialiased;
+}
+
+h1, h2, h3, .font-heading {
+  font-family: "Playfair Display", Georgia, serif;
+}
+
+/* Visible focus ring for keyboard users, everywhere */
+:focus-visible {
+  outline: 2px solid theme("colors.brand.gold");
+  outline-offset: 2px;
+}
+
+/* react-phone-number-input restyle to match the design system */
+.PhoneInput {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid theme("colors.brand.border");
+  border-radius: 0.75rem;
+  background: theme("colors.brand.surface");
+  padding: 0 0.75rem;
+  min-height: 48px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.PhoneInput:focus-within {
+  border-color: theme("colors.brand.gold");
+  box-shadow: 0 0 0 2px theme("colors.brand.gold-light");
+}
+
+.PhoneInputInput {
+  border: none;
+  outline: none;
+  flex: 1;
+  font-size: 0.9375rem;
+  padding: 0.625rem 0;
+  background: transparent;
+}
+
+.PhoneInputCountrySelect {
+  border: none;
+  background: transparent;
+  font-size: 0.9375rem;
+}
