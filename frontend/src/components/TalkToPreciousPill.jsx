@@ -1,13 +1,13 @@
-// Small floating "Talk to Ada" button that stays visible while scrolling
-// on mobile. Desktop already has the persistent card in the visual panel,
-// so this only renders below the lg breakpoint.
+// Small floating "Talk to Precious" button that stays visible while
+// scrolling on mobile. Desktop already has the persistent card in the
+// visual panel, so this only renders below the lg breakpoint.
 import { Mic, Loader2, PhoneOff } from "lucide-react";
-import { isAdaCallAvailable } from "../lib/useAdaCall.js";
+import { isPreciousCallAvailable } from "../lib/usePreciousCall.js";
 
-export default function TalkToAdaPill({ adaCall }) {
-  if (!isAdaCallAvailable) return null;
+export default function TalkToPreciousPill({ preciousCall }) {
+  if (!isPreciousCallAvailable) return null;
 
-  const { status, start, stop } = adaCall;
+  const { status, start, stop } = preciousCall;
   // A live call already has full controls in the card above — the pill
   // only needs to offer starting a call, or ending one in a pinch.
   const isLive = status === "live";
@@ -28,7 +28,7 @@ export default function TalkToAdaPill({ adaCall }) {
       {isConnecting && <Loader2 size={18} className="animate-spin" strokeWidth={2} />}
       {isLive && <PhoneOff size={18} strokeWidth={1.75} />}
       {!isConnecting && !isLive && <Mic size={18} strokeWidth={1.75} />}
-      {isLive ? "End call" : isConnecting ? "Connecting…" : "Talk to Ada"}
+      {isLive ? "End call" : isConnecting ? "Connecting…" : "Talk to Precious"}
     </button>
   );
 }

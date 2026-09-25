@@ -116,7 +116,7 @@ export default function EnquiryForm({ onSubmitted, onAboutYouComplete }) {
   function goNext() {
     if (!validateStep(step)) return;
     if (step === 1) {
-      // Let the "Talk to Ada" widget greet the visitor by name once we
+      // Let the "Talk to Precious" widget greet the visitor by name once we
       // actually know who they are — purely additive, doesn't touch
       // validation or the eventual submit payload.
       onAboutYouComplete?.({

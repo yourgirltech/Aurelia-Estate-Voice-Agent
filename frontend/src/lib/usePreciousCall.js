@@ -1,7 +1,7 @@
-// Manages a single live browser call with Ada (the Vapi inbound assistant)
-// using the Vapi Web SDK. Only the Vapi PUBLIC key is ever used here — it's
-// designed to be exposed in frontend code. The private key lives only in
-// the Edge Function's secrets and is never referenced from this file.
+// Manages a single live browser call with Precious (the Vapi inbound
+// assistant) using the Vapi Web SDK. Only the Vapi PUBLIC key is ever used
+// here — it's designed to be exposed in frontend code. The private key
+// lives only in the Edge Function's secrets and is never referenced here.
 import { useCallback, useEffect, useRef, useState } from "react";
 import Vapi from "@vapi-ai/web";
 import { buildSalutation } from "./salutations.js";
@@ -10,12 +10,12 @@ import { LANGUAGES } from "../config/languages.js";
 const PUBLIC_KEY = import.meta.env.VITE_VAPI_PUBLIC_KEY;
 const ASSISTANT_ID = import.meta.env.VITE_VAPI_INBOUND_ASSISTANT_ID;
 
-// Exported so components can hide the "Talk to Ada" button entirely when
-// these aren't configured, instead of rendering something that will fail.
-export const isAdaCallAvailable = Boolean(PUBLIC_KEY && ASSISTANT_ID);
+// Exported so components can hide the "Talk to Precious" button entirely
+// when these aren't configured, instead of rendering something that will fail.
+export const isPreciousCallAvailable = Boolean(PUBLIC_KEY && ASSISTANT_ID);
 
 // call status: "idle" | "connecting" | "live" | "ended" | "error"
-export function useAdaCall(aboutYou) {
+export function usePreciousCall(aboutYou) {
   const vapiRef = useRef(null);
   const timerRef = useRef(null);
   // Read via a ref so `start()` always uses the latest known-visitor data
@@ -24,14 +24,14 @@ export function useAdaCall(aboutYou) {
   aboutYouRef.current = aboutYou;
 
   const [status, setStatus] = useState("idle");
-  const [isAdaSpeaking, setIsAdaSpeaking] = useState(false);
+  const [isPreciousSpeaking, setIsPreciousSpeaking] = useState(false);
   const [volumeLevel, setVolumeLevel] = useState(0);
   const [isMuted, setIsMuted] = useState(false);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [error, setError] = useState(null); // { kind, message }
 
   useEffect(() => {
-    if (!isAdaCallAvailable) return;
+    if (!isPreciousCallAvailable) return;
 
     const vapi = new Vapi(PUBLIC_KEY);
     vapiRef.current = vapi;
@@ -44,16 +44,16 @@ export function useAdaCall(aboutYou) {
     };
     const handleCallEnd = () => {
       clearInterval(timerRef.current);
-      setIsAdaSpeaking(false);
+      setIsPreciousSpeaking(false);
       setVolumeLevel(0);
       // Don't overwrite an error state that already explains what happened.
       setStatus((prev) => (prev === "error" ? prev : "ended"));
     };
-    const handleSpeechStart = () => setIsAdaSpeaking(true);
-    const handleSpeechEnd = () => setIsAdaSpeaking(false);
+    const handleSpeechStart = () => setIsPreciousSpeaking(true);
+    const handleSpeechEnd = () => setIsPreciousSpeaking(false);
     const handleVolumeLevel = (level) => setVolumeLevel(level);
     const handleError = (err) => {
-      console.error("Ada call error:", err);
+      console.error("Precious call error:", err);
       clearInterval(timerRef.current);
       setStatus("error");
       setError(classifyError(err));
@@ -127,7 +127,7 @@ export function useAdaCall(aboutYou) {
     });
   }, []);
 
-  return { status, isAdaSpeaking, volumeLevel, isMuted, elapsedSeconds, error, start, stop, toggleMute };
+  return { status, isPreciousSpeaking, volumeLevel, isMuted, elapsedSeconds, error, start, stop, toggleMute };
 }
 
 function classifyError(err) {

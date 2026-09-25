@@ -167,10 +167,10 @@ directory, and a redirect rule so client-side routing works.
 Submitting the same phone number again within 10 minutes will save a new lead
 row but will **not** place another call (duplicate protection).
 
-## 8. Talk to Ada (web calls)
+## 8. Talk to Precious (web calls)
 
 Some visitors won't want to fill in the form — they can click **"Talk to
-Ada"** to start a live voice call right in the browser (using their
+Precious"** to start a live voice call right in the browser (using their
 microphone), or call the phone number shown next to it. This uses the
 **Vapi Web SDK**, and needs a separate Vapi assistant set up for *inbound*
 conversations (as opposed to the outbound assistant the Edge Function calls
@@ -182,7 +182,7 @@ after someone submits the form).
    Function's `VAPI_API_KEY` secret, never put it in the frontend) and a
    **public** key. Copy the **public** key — it's designed to be used in
    browser code.
-2. **Find (or create) the `Ada – Inbound` assistant.** In Vapi, create a
+2. **Find (or create) the `Precious – Inbound` assistant.** In Vapi, create a
    second assistant for people calling in live (separate from the outbound
    one), give it a prompt suited to a caller who initiated the conversation,
    and copy its **Assistant ID** from the assistant's settings page.
@@ -197,10 +197,11 @@ after someone submits the form).
    Then restart the dev server (`npm run dev`) — Vite only reads `.env` on
    startup, so changes won't apply to an already-running server.
 
-   If any of the Vapi variables are missing, the "Talk to Ada" button simply
-   doesn't render (no crash). If the phone variables are missing, the phone
-   number doesn't render. Both are independent — you can ship with just one.
-4. **Test it:** click "Talk to Ada", allow microphone access when your
+   If any of the Vapi variables are missing, the "Talk to Precious" button
+   simply doesn't render (no crash). If the phone variables are missing, the
+   phone number doesn't render. Both are independent — you can ship with
+   just one.
+4. **Test it:** click "Talk to Precious", allow microphone access when your
    browser asks, and speak. You should see the call move through
    Connecting → Live (with a timer and audio visualiser) → Ended when you
    hang up. Try denying the microphone permission once too, so you can see
@@ -211,13 +212,176 @@ after someone submits the form).
    `http://` from any other address (e.g. a LAN IP for testing on your
    phone) — deploy to Netlify (HTTPS by default) or use `localhost` instead.
 
+## 9. Precious's property tools
+
+Precious (the Vapi voice assistant) can check **live property availability**
+mid-call using two custom tools backed by a new Edge Function, `vapi-tools`.
+When a customer describes what they want, Precious calls `search_properties`
+and answers with real matches (or the closest alternatives) in a couple of
+seconds; `get_property_details` lets her describe one property fully.
+
+All of this is in Windows PowerShell, using `npx supabase` (so you don't
+need the CLI installed globally).
+
+### 1. Run the migration
+
+The earlier migrations in this project were run by pasting them into the
+Supabase SQL Editor, not with `supabase db push` — do the same here for
+consistency:
+
+1. Open your project in the [Supabase dashboard](https://supabase.com/dashboard) → **SQL Editor**.
+2. Open `supabase/migrations/0003_property_details.sql` in your editor, copy
+   the whole file, paste it into a new SQL Editor query, and click **Run**.
+3. Confirm it worked: the `properties` table should now have 12 rows and the
+   new columns (`building_name`, `city`, `area`, `features`, `nearby`, etc.)
+   in the Table Editor.
+
+### 2. Set the shared secret
+
+Vapi can't send a Supabase login token when it calls this function, so it's
+protected by a shared secret instead — Vapi sends it in an `x-vapi-secret`
+header, and the function checks it against `VAPI_TOOLS_SECRET`.
+
+Generate a long random string in PowerShell:
+
+```powershell
+[guid]::NewGuid().ToString("N") + [guid]::NewGuid().ToString("N")
+```
+
+Copy the output, then set it as a secret:
+
+```powershell
+npx supabase secrets set VAPI_TOOLS_SECRET=paste_the_string_here
+```
+
+### 3. Deploy the function
+
+```powershell
+npx supabase functions deploy vapi-tools --no-verify-jwt
+```
+
+`--no-verify-jwt` is used for the same reason as `submit-enquiry` — Vapi
+isn't a logged-in Supabase user. The shared secret from step 2 is what
+actually protects it.
+
+### 4. The function URL
+
+```
+https://<project-ref>.supabase.co/functions/v1/vapi-tools
+```
+
+Find `<project-ref>` in your Supabase project URL (Project Settings → API),
+the same one you used for `VITE_SUPABASE_URL`.
+
+### 5. Test it from PowerShell
+
+```powershell
+$body = @{
+  message = @{
+    type = "tool-calls"
+    toolCallList = @(
+      @{ id = "test1"; name = "search_properties"; arguments = @{ city = "Dubai"; bedrooms = 2 } }
+    )
+  }
+} | ConvertTo-Json -Depth 10
+
+Invoke-RestMethod `
+  -Uri "https://YOUR_PROJECT_REF.supabase.co/functions/v1/vapi-tools" `
+  -Method Post `
+  -Headers @{ "x-vapi-secret" = "YOUR_SECRET" } `
+  -ContentType "application/json" `
+  -Body $body
+```
+
+You should get back something like:
+
+```json
+{ "results": [ { "toolCallId": "test1", "result": "FOUND 2 MATCHES:\n1) [id: ...] ..." } ] }
+```
+
+If you prefer `curl.exe` (note the escaped quotes — PowerShell needs them
+for an inline JSON string):
+
+```powershell
+curl.exe -X POST "https://YOUR_PROJECT_REF.supabase.co/functions/v1/vapi-tools" `
+  -H "x-vapi-secret: YOUR_SECRET" `
+  -H "Content-Type: application/json" `
+  -d '{\"message\":{\"type\":\"tool-calls\",\"toolCallList\":[{\"id\":\"test1\",\"name\":\"search_properties\",\"arguments\":{\"city\":\"Dubai\"}}]}}'
+```
+
+Try a request without the `x-vapi-secret` header too — you should get `401`.
+
+### 6. Create the two tools in the Vapi dashboard
+
+Go to **Tools → Create Tool → Custom Tool** and create each of these:
+
+**Tool 1 — `search_properties`**
+
+- **Name:** `search_properties`
+- **Description:** Searches Aurelia Estates' live property listings by
+  location, type, budget and features. Returns up to 3 matching or
+  closest-alternative properties as short spoken text.
+- **Parameters (JSON schema):**
+  ```json
+  {
+    "type": "object",
+    "properties": {
+      "query": { "type": "string", "description": "Free text such as a building name or area, e.g. 'Marina Crest' or 'Lekki'." },
+      "city": { "type": "string" },
+      "area": { "type": "string" },
+      "property_type": {
+        "type": "string",
+        "enum": ["apartment", "house", "villa", "detached", "semi-detached", "terraced", "bungalow", "land", "commercial"]
+      },
+      "bedrooms": { "type": "integer" },
+      "listing_type": { "type": "string", "enum": ["sale", "rent"] },
+      "max_budget": { "type": "number" },
+      "currency": { "type": "string", "description": "e.g. AED, USD, GBP, EUR, NGN" },
+      "features": { "type": "array", "items": { "type": "string" }, "description": "e.g. [\"gym\", \"parking\"]" },
+      "near": { "type": "array", "items": { "type": "string" }, "description": "e.g. [\"school\", \"hospital\", \"main road\"]" }
+    }
+  }
+  ```
+
+**Tool 2 — `get_property_details`**
+
+- **Name:** `get_property_details`
+- **Description:** Gets full details for one specific Aurelia Estates
+  property by ID or name, so Precious can describe it to the customer.
+- **Parameters (JSON schema):**
+  ```json
+  {
+    "type": "object",
+    "properties": {
+      "property_id": { "type": "string", "description": "The property's UUID, if known (e.g. from a previous search result)." },
+      "property_name": { "type": "string", "description": "The building or property name, if the ID isn't known." }
+    }
+  }
+  ```
+
+**For both tools, set:**
+- **Server URL:** `https://<project-ref>.supabase.co/functions/v1/vapi-tools`
+- **Header:** `x-vapi-secret: YOUR_SECRET`
+- **Request Start message:** "Give me a moment while I check our listings."
+- **Request Failed message:** "I'm having trouble reaching our listings right now. I'll have a consultant send you options."
+- **Timeout:** 10 seconds
+
+### 7. Attach both tools to both Precious assistants
+
+Open each of your two Vapi assistants — the **outbound** one that
+`submit-enquiry` calls after a form submission, and the **inbound** one used
+for live browser/phone calls (see "Talk to Precious" above) — and add both
+`search_properties` and `get_property_details` under that assistant's
+**Tools** section. Both assistants need both tools so Precious can look
+things up regardless of who started the call.
+
 ---
 
 ## Notes for extending this later
 
-- **Vapi tools during the call** (e.g. looking up properties live): add them to
-  your Vapi assistant config; the `property_id` / `property_name` variables are
-  already passed into the call so a tool can use them.
+- **Vapi tools during the call**: done — see "Precious's property tools"
+  above. `book_inspection`, `transfer_to_consultant` and recognising
+  returning callers are still open for later.
 - **End-of-call webhook**: add a new Edge Function (e.g. `vapi-webhook`) that
   updates the `calls` table (`status`, `summary`, `transcript`,
   `recording_url`, `structured_data`, `ended_reason`) using the helpers in
@@ -228,7 +392,7 @@ after someone submits the form).
 - **More languages**: add an entry to `frontend/src/config/languages.js`, plus
   matching entries in `salutations.js`, `firstMessages.js` and
   `voiceConfig.js` under `supabase/functions/submit-enquiry/`, **and** in
-  `frontend/src/lib/salutations.js` (a duplicate used by "Talk to Ada" so the
+  `frontend/src/lib/salutations.js` (a duplicate used by "Talk to Precious" so the
   browser can build the same salutation without calling the Edge Function).
   The `firstMessages.js` file has a reminder comment that every message needs
   native-speaker review before going live.

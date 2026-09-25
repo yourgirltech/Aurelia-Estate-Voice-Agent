@@ -1,16 +1,16 @@
-// "Talk to Ada" card: a live in-browser voice call (Vapi Web SDK) plus a
-// fallback phone number. Rendered with variant="panel" on the dark hero
+// "Talk to Precious" card: a live in-browser voice call (Vapi Web SDK) plus
+// a fallback phone number. Rendered with variant="panel" on the dark hero
 // image (desktop) and variant="mobile" as a plain card above the form.
 import { Mic, MicOff, PhoneOff, Loader2, AlertCircle, Phone as PhoneIcon, RotateCcw } from "lucide-react";
-import AdaVisualizer from "./AdaVisualizer.jsx";
-import { isAdaCallAvailable } from "../lib/useAdaCall.js";
+import PreciousVisualizer from "./PreciousVisualizer.jsx";
+import { isPreciousCallAvailable } from "../lib/usePreciousCall.js";
 
 const PHONE_DISPLAY = import.meta.env.VITE_PHONE_DISPLAY;
 const PHONE_E164 = import.meta.env.VITE_PHONE_E164;
 const isPhoneAvailable = Boolean(PHONE_DISPLAY && PHONE_E164);
 
-export default function TalkToAda({ adaCall, variant = "mobile", className = "" }) {
-  if (!isAdaCallAvailable && !isPhoneAvailable) return null;
+export default function TalkToPrecious({ preciousCall, variant = "mobile", className = "" }) {
+  if (!isPreciousCallAvailable && !isPhoneAvailable) return null;
 
   const isPanel = variant === "panel";
   const textClass = isPanel ? "text-white" : "text-brand";
@@ -23,16 +23,16 @@ export default function TalkToAda({ adaCall, variant = "mobile", className = "" 
     <div className={`${containerClass} ${className}`}>
       <p className={`text-sm font-medium mb-3 ${textClass}`}>Prefer to talk now?</p>
 
-      {isAdaCallAvailable && (
+      {isPreciousCallAvailable && (
         <CallControls
-          adaCall={adaCall}
+          preciousCall={preciousCall}
           isPanel={isPanel}
           textClass={textClass}
           mutedTextClass={mutedTextClass}
         />
       )}
 
-      {isAdaCallAvailable && isPhoneAvailable && (
+      {isPreciousCallAvailable && isPhoneAvailable && (
         <div className={`my-4 h-px ${isPanel ? "bg-white/15" : "bg-brand-border"}`} />
       )}
 
@@ -58,9 +58,9 @@ function PhoneSection({ textClass, mutedTextClass }) {
   );
 }
 
-function CallControls({ adaCall, isPanel, textClass, mutedTextClass }) {
-  const { status, isAdaSpeaking, volumeLevel, isMuted, elapsedSeconds, error, start, stop, toggleMute } =
-    adaCall;
+function CallControls({ preciousCall, isPanel, textClass, mutedTextClass }) {
+  const { status, isPreciousSpeaking, volumeLevel, isMuted, elapsedSeconds, error, start, stop, toggleMute } =
+    preciousCall;
 
   const buttonBase =
     "inline-flex items-center justify-center gap-2 min-h-[44px] px-5 rounded-xl font-medium transition-colors w-full";
@@ -77,7 +77,7 @@ function CallControls({ adaCall, isPanel, textClass, mutedTextClass }) {
         <>
           <button type="button" onClick={start} className={primaryButton}>
             <Mic size={18} strokeWidth={1.75} />
-            Talk to Ada
+            Talk to Precious
           </button>
           <p className={`text-xs mt-2 ${mutedTextClass}`}>Live AI assistant · any language · free</p>
           <p className={`text-xs mt-1 ${mutedTextClass}`}>
@@ -90,18 +90,18 @@ function CallControls({ adaCall, isPanel, textClass, mutedTextClass }) {
       {status === "connecting" && (
         <button type="button" disabled className={`${primaryButton} opacity-70 cursor-not-allowed`}>
           <Loader2 size={18} className="animate-spin" strokeWidth={2} />
-          Connecting you to Ada…
+          Connecting you to Precious…
         </button>
       )}
 
       {status === "live" && (
         <div>
           <div className="flex items-center justify-between mb-3">
-            <AdaVisualizer volumeLevel={volumeLevel} tone={isPanel ? "light" : "dark"} />
+            <PreciousVisualizer volumeLevel={volumeLevel} tone={isPanel ? "light" : "dark"} />
             <span className={`text-xs font-mono ${mutedTextClass}`}>{formatTimer(elapsedSeconds)}</span>
           </div>
           <p className={`text-xs mb-3 ${mutedTextClass}`}>
-            {isAdaSpeaking ? "Ada is speaking…" : "Listening…"}
+            {isPreciousSpeaking ? "Precious is speaking…" : "Listening…"}
           </p>
           <div className="flex gap-2">
             <button
@@ -127,7 +127,7 @@ function CallControls({ adaCall, isPanel, textClass, mutedTextClass }) {
       {status === "ended" && (
         <div>
           <p className={`text-sm mb-3 ${textClass}`}>
-            Thanks for speaking with Ada. A consultant will follow up by email.
+            Thanks for speaking with Precious. A consultant will follow up by email.
           </p>
           <button type="button" onClick={start} className={primaryButton}>
             <Mic size={18} strokeWidth={1.75} />
@@ -159,7 +159,7 @@ function errorMessage(error) {
     case "no-mic":
       return "We couldn't find a microphone. Please connect one and try again.";
     default:
-      return "We couldn't connect you to Ada. Please try again.";
+      return "We couldn't connect you to Precious. Please try again.";
   }
 }
 

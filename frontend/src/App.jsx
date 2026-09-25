@@ -2,19 +2,19 @@ import { useState } from "react";
 import SplitLayout from "./components/SplitLayout.jsx";
 import EnquiryForm from "./components/EnquiryForm.jsx";
 import ThankYou from "./components/ThankYou.jsx";
-import TalkToAda from "./components/TalkToAda.jsx";
-import TalkToAdaPill from "./components/TalkToAdaPill.jsx";
-import { useAdaCall } from "./lib/useAdaCall.js";
+import TalkToPrecious from "./components/TalkToPrecious.jsx";
+import TalkToPreciousPill from "./components/TalkToPreciousPill.jsx";
+import { usePreciousCall } from "./lib/usePreciousCall.js";
 import { COMPANY } from "./config/company.js";
 
 export default function App() {
   const [result, setResult] = useState(null);
   const [aboutYou, setAboutYou] = useState(null);
-  const adaCall = useAdaCall(aboutYou);
+  const preciousCall = usePreciousCall(aboutYou);
 
   return (
-    <SplitLayout adaCall={adaCall}>
-      <TalkToAda adaCall={adaCall} variant="mobile" className="lg:hidden mb-6" />
+    <SplitLayout preciousCall={preciousCall}>
+      <TalkToPrecious preciousCall={preciousCall} variant="mobile" className="lg:hidden mb-6" />
 
       {result ? (
         <ThankYou salutation={result.salutation} language={result.language} />
@@ -26,7 +26,7 @@ export default function App() {
         © {new Date().getFullYear()} {COMPANY.name}
       </p>
 
-      <TalkToAdaPill adaCall={adaCall} />
+      <TalkToPreciousPill preciousCall={preciousCall} />
     </SplitLayout>
   );
 }

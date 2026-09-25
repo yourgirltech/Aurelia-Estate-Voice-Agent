@@ -2,7 +2,7 @@
 // Purely decorative, so it's hidden from assistive tech.
 const BAR_WEIGHTS = [0.5, 0.9, 1, 0.75, 0.55];
 
-export default function AdaVisualizer({ volumeLevel = 0, tone = "light" }) {
+export default function PreciousVisualizer({ volumeLevel = 0, tone = "light" }) {
   const barClass = tone === "light" ? "bg-white/80" : "bg-brand-gold";
 
   return (

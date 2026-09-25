@@ -11,45 +11,45 @@
 export const FIRST_MESSAGES = {
   en: {
     with_property:
-      "Hello, am I speaking with {salutation}? This is Ada calling from {company} about your enquiry regarding {property}.",
+      "Hello, am I speaking with {salutation}? This is Precious calling from {company} about your enquiry regarding {property}.",
     no_property:
-      "Hello, am I speaking with {salutation}? This is Ada calling from {company} about your enquiry.",
+      "Hello, am I speaking with {salutation}? This is Precious calling from {company} about your enquiry.",
   },
   fr: {
     with_property:
-      "Bonjour, suis-je bien en ligne avec {salutation} ? Ici Ada, de {company}, au sujet de votre demande concernant {property}.",
+      "Bonjour, suis-je bien en ligne avec {salutation} ? Ici Precious, de {company}, au sujet de votre demande concernant {property}.",
     no_property:
-      "Bonjour, suis-je bien en ligne avec {salutation} ? Ici Ada, de {company}, au sujet de votre demande.",
+      "Bonjour, suis-je bien en ligne avec {salutation} ? Ici Precious, de {company}, au sujet de votre demande.",
   },
   es: {
     with_property:
-      "Hola, ¿hablo con {salutation}? Soy Ada, de {company}, y le llamo por su consulta sobre {property}.",
+      "Hola, ¿hablo con {salutation}? Soy Precious, de {company}, y le llamo por su consulta sobre {property}.",
     no_property:
-      "Hola, ¿hablo con {salutation}? Soy Ada, de {company}, y le llamo por su consulta.",
+      "Hola, ¿hablo con {salutation}? Soy Precious, de {company}, y le llamo por su consulta.",
   },
   de: {
     with_property:
-      "Guten Tag, spreche ich mit {salutation}? Hier ist Ada von {company}, ich rufe wegen Ihrer Anfrage zu {property} an.",
+      "Guten Tag, spreche ich mit {salutation}? Hier ist Precious von {company}, ich rufe wegen Ihrer Anfrage zu {property} an.",
     no_property:
-      "Guten Tag, spreche ich mit {salutation}? Hier ist Ada von {company}, ich rufe wegen Ihrer Anfrage an.",
+      "Guten Tag, spreche ich mit {salutation}? Hier ist Precious von {company}, ich rufe wegen Ihrer Anfrage an.",
   },
   ar: {
     with_property:
-      "مرحباً، هل أتحدث مع {salutation}؟ معك آدا من {company}، أتصل بخصوص استفسارك عن {property}.",
+      "مرحباً، هل أتحدث مع {salutation}؟ معك بريشس من {company}، أتصل بخصوص استفسارك عن {property}.",
     no_property:
-      "مرحباً، هل أتحدث مع {salutation}؟ معك آدا من {company}، أتصل بخصوص استفسارك.",
+      "مرحباً، هل أتحدث مع {salutation}؟ معك بريشس من {company}، أتصل بخصوص استفسارك.",
   },
   pt: {
     with_property:
-      "Olá, falo com {salutation}? Aqui é a Ada, da {company}, a ligar sobre o seu pedido de informação sobre {property}.",
+      "Olá, falo com {salutation}? Aqui é a Precious, da {company}, a ligar sobre o seu pedido de informação sobre {property}.",
     no_property:
-      "Olá, falo com {salutation}? Aqui é a Ada, da {company}, a ligar sobre o seu pedido de informação.",
+      "Olá, falo com {salutation}? Aqui é a Precious, da {company}, a ligar sobre o seu pedido de informação.",
   },
   it: {
     with_property:
-      "Buongiorno, parlo con {salutation}? Sono Ada di {company} e la chiamo per la sua richiesta su {property}.",
+      "Buongiorno, parlo con {salutation}? Sono Precious di {company} e la chiamo per la sua richiesta su {property}.",
     no_property:
-      "Buongiorno, parlo con {salutation}? Sono Ada di {company} e la chiamo per la sua richiesta.",
+      "Buongiorno, parlo con {salutation}? Sono Precious di {company} e la chiamo per la sua richiesta.",
   },
 };
 

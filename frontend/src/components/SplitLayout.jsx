@@ -1,13 +1,13 @@
 import { Clock, Languages, ShieldCheck } from "lucide-react";
 import { COMPANY } from "../config/company.js";
-import TalkToAda from "./TalkToAda.jsx";
+import TalkToPrecious from "./TalkToPrecious.jsx";
 
 const ICONS = { Clock, Languages, ShieldCheck };
 
-export default function SplitLayout({ children, adaCall }) {
+export default function SplitLayout({ children, preciousCall }) {
   return (
     <div className="lg:grid lg:grid-cols-2 lg:min-h-screen">
-      <VisualPanel adaCall={adaCall} />
+      <VisualPanel preciousCall={preciousCall} />
       <div className="flex justify-center px-4 py-8 sm:py-12 lg:py-16 lg:overflow-y-auto">
         <div className="w-full max-w-xl">{children}</div>
       </div>
@@ -15,7 +15,7 @@ export default function SplitLayout({ children, adaCall }) {
   );
 }
 
-function VisualPanel({ adaCall }) {
+function VisualPanel({ preciousCall }) {
   return (
     <div
       className="relative h-56 sm:h-64 lg:h-auto lg:sticky lg:top-0 lg:min-h-screen flex flex-col justify-between overflow-hidden"
@@ -54,7 +54,7 @@ function VisualPanel({ adaCall }) {
           })}
         </ul>
 
-        <TalkToAda adaCall={adaCall} variant="panel" className="hidden lg:block mt-8 max-w-sm" />
+        <TalkToPrecious preciousCall={preciousCall} variant="panel" className="hidden lg:block mt-8 max-w-sm" />
       </div>
     </div>
   );
