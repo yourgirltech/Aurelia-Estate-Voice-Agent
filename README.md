@@ -4,6 +4,8 @@ A customer fills in a property enquiry form, and within about a minute an AI voi
 agent (via [Vapi](https://vapi.ai)) calls them, greets them by the correct title
 and name, and speaks their preferred language.
 
+> **In production for a client.** The live system runs on the client's own domain and isn't linked here. This repository is the build record: the full source, with client data, credentials and URLs removed.
+
 ## How it works
 
 1. Customer submits the form (React app).
